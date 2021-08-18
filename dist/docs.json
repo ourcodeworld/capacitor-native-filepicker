@@ -20,6 +20,60 @@
         "docs": "",
         "complexTypes": [],
         "slug": "echo"
+      },
+      {
+        "name": "launchFilePicker",
+        "signature": "(options: FilePickerOptions) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ limit?: number | undefined; allowedExtensions?: any; showHiddenFiles?: boolean | undefined; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "FilePickerOptions",
+          "Array"
+        ],
+        "slug": "launchfilepicker"
+      },
+      {
+        "name": "launchFolderPicker",
+        "signature": "(options: FolderPickerOptions) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ limit?: number | undefined; showHiddenFiles?: boolean | undefined; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "FolderPickerOptions",
+          "Array"
+        ],
+        "slug": "launchfolderpicker"
+      },
+      {
+        "name": "shareFile",
+        "signature": "(options: { filepath: string; }) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ filepath: string; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "sharefile"
       }
     ],
     "properties": []

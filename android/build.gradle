@@ -45,8 +45,8 @@ repositories {
     google()
     jcenter()
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
-
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -55,4 +55,9 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+
+    implementation 'com.nononsenseapps:filepicker:4.1.0'
+    implementation 'me.rosuh:AndroidFilePicker:0.7.1'
+ 
+    // implementation 'com.adityak:browsemyfiles:1.9'
 }
