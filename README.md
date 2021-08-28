@@ -1,6 +1,6 @@
 # capacitor-native-filepicker
 
-In most of the cases, you don't need this picker. Implementing your own filepicker with the [File System API](https://capacitorjs.com/docs/apis/filesystem) of CapacitorJS is quite [easy and convenient](https://www.youtube.com/watch?v=WNte407ArQ0) as its design will be totally yours and matches your application UI. I developed this plugin in case that you want to use a more native approach in my application that allows users to pick some files or folders from the storage (as well as learning how to develop CapacitorJS plugins for both platforms). 
+In most of the cases, you don't need this picker. Implementing your own filepicker with the [File System API](https://capacitorjs.com/docs/apis/filesystem) of CapacitorJS is quite [easy and convenient](https://www.youtube.com/watch?v=WNte407ArQ0) as its design will be totally yours and matches your application UI. I developed this plugin because I wanted to use a more native approach in my application that allows users to pick some files or folders from the storage (as well as learning how to develop CapacitorJS plugins for both platforms). 
 
 For Android it uses under the hood the [AndroidFilePicker library by Rosuh](https://github.com/rosuH/AndroidFilePicker). For iOS, it uses the [UIDocumentPickerViewController](https://developer.apple.com/documentation/uikit/uidocumentpickerviewcontroller) view.
 
