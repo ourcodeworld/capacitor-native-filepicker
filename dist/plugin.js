@@ -13,7 +13,7 @@ var capacitorCapacitorNativeFilePicker = (function (exports, core) {
         async launchFolderPicker(options) {
             console.log(`FOLDER PICKER`, options);
             return {
-                folders: ["/testing"]
+                folders: ["/example-directory1", "/example-directory2"]
             };
         }
         async launchFilePicker(options) {

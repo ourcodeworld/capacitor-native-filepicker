@@ -41,7 +41,6 @@ import java.io.File;
 )
 public class CapacitorNativeFilePickerPlugin extends Plugin {
     private PluginCall PUBLIC_CALL = null;
-    private CapacitorNativeFilePicker implementation = new CapacitorNativeFilePicker();
 
     @PluginMethod
     public void shareFile(PluginCall call) {
@@ -59,30 +58,6 @@ public class CapacitorNativeFilePickerPlugin extends Plugin {
             intent.setType("*/*");
             getActivity().startActivity(Intent.createChooser(intent, "Share file via..."));
         }catch (Exception ex){}
-    }
-
-    @PluginMethod
-    public void echo(PluginCall call) {
-        /*
-        Intent intent = new Intent("com.ourcodeworld.plugins.capacitornativefilepicker.DialogShowPicker");
-
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        startActivityForResult(call, intent, "pickFilesResult");
-*/
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        // intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///storage/emulated/0/test.html"));
-
-        Uri photoURI = FileProvider.getUriForFile(
-            getContext(),
-            getContext().getApplicationContext().getPackageName() + ".provider",
-            new File(Uri.parse("file:///storage/emulated/0/test.html").getPath())
-        );
-
-        intent.putExtra(Intent.EXTRA_STREAM, photoURI);
-        intent.setType("*/*");
-        getActivity().startActivity(Intent.createChooser(intent, "Share file via..."));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
