@@ -22,4 +22,9 @@ export interface CapacitorNativeFilePickerPlugin {
     shareFile(options: {
         filepath: string;
     }): Promise<void>;
+    getFileUrlForUri(options: {
+        uri: string;
+    }): Promise<{
+        url: string;
+    }>;
 }

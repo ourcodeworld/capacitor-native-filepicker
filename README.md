@@ -52,6 +52,7 @@ console.log(files);
 * [`launchFilePicker(...)`](#launchfilepicker)
 * [`launchFolderPicker(...)`](#launchfolderpicker)
 * [`shareFile(...)`](#sharefile)
+* [`getFileUrlForUri(...)`](#getfileurlforuri)
 
 </docgen-index>
 
@@ -112,6 +113,21 @@ shareFile(options: { filepath: string; }) => any
 | Param         | Type                               |
 | ------------- | ---------------------------------- |
 | **`options`** | <code>{ filepath: string; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### getFileUrlForUri(...)
+
+```typescript
+getFileUrlForUri(options: { uri: string; }) => any
+```
+
+| Param         | Type                          |
+| ------------- | ----------------------------- |
+| **`options`** | <code>{ uri: string; }</code> |
 
 **Returns:** <code>any</code>
 

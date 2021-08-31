@@ -74,6 +74,22 @@
         "docs": "",
         "complexTypes": [],
         "slug": "sharefile"
+      },
+      {
+        "name": "getFileUrlForUri",
+        "signature": "(options: { uri: string; }) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ uri: string; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "getfileurlforuri"
       }
     ],
     "properties": []

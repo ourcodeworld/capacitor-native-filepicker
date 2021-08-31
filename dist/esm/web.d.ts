@@ -17,4 +17,9 @@ export declare class CapacitorNativeFilePickerWeb extends WebPlugin implements C
     shareFile(options: {
         filepath: string;
     }): Promise<void>;
+    getFileUrlForUri(options: {
+        uri: string;
+    }): Promise<{
+        filepath: string;
+    }>;
 }

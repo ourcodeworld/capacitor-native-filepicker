@@ -19,5 +19,11 @@ export class CapacitorNativeFilePickerWeb extends WebPlugin {
     async shareFile(options) {
         console.log(`File ${options.filepath} shared!`);
     }
+    async getFileUrlForUri(options) {
+        console.log('getFileUrlForUri', options);
+        return {
+            filepath: "./example-converted-file.txt"
+        };
+    }
 }
 //# sourceMappingURL=web.js.map

@@ -14,4 +14,5 @@ export interface CapacitorNativeFilePickerPlugin {
     launchFilePicker(options: FilePickerOptions): Promise<{ files: Array<string> }>;
     launchFolderPicker(options: FolderPickerOptions): Promise<{ folders: Array<string> }>;
     shareFile(options: { filepath: string }): Promise<void>;
+    getFileUrlForUri(options: { uri: string }): Promise<{ filepath: string }>;
 }

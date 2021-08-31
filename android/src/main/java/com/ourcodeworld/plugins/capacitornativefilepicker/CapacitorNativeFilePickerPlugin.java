@@ -7,11 +7,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
+import com.getcapacitor.FileUtils;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
@@ -26,6 +28,7 @@ import com.getcapacitor.annotation.PermissionCallback;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.InputStream;
 
 @CapacitorPlugin(
     name = "CapacitorNativeFilePicker",
@@ -39,8 +42,28 @@ import java.io.File;
         )
     }
 )
+
 public class CapacitorNativeFilePickerPlugin extends Plugin {
     private PluginCall PUBLIC_CALL = null;
+
+    @PluginMethod
+    public void echo(PluginCall call) {
+    }
+
+    @PluginMethod
+    public void getFileUrlForUri(PluginCall call){
+        JSObject response = new JSObject();
+
+        try {
+            String filepath = FileUtils.getFileUrlForUri(getContext(), Uri.parse(call.getString("uri")));
+
+            response.put("filepath", filepath);
+
+            call.resolve(response);
+        }catch (Exception err){
+            call.reject(err.getMessage());
+        }
+    }
 
     @PluginMethod
     public void shareFile(PluginCall call) {

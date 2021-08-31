@@ -28,4 +28,12 @@ export class CapacitorNativeFilePickerWeb extends WebPlugin implements Capacitor
     async shareFile(options: { filepath: string }): Promise<void> {
         console.log(`File ${options.filepath} shared!`);
     }
+
+    async getFileUrlForUri(options: { uri: string }): Promise<{ filepath: string }> {
+        console.log('getFileUrlForUri', options);
+
+        return {
+            filepath: "./example-converted-file.txt"
+        };
+    }
 }
