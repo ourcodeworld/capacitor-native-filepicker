@@ -1,80 +1,76 @@
-import { WebPlugin } from '@capacitor/core';
+'use strict';
 
-import type { CapacitorNativeFilePickerPlugin, FilePickerOptions, CreateFileOptions, WriteToFileOptions } from './definitions';
+Object.defineProperty(exports, '__esModule', { value: true });
 
-export class CapacitorNativeFilePickerWeb extends WebPlugin implements CapacitorNativeFilePickerPlugin 
-{
-    async echo(options: { value: string }): Promise<{ value: string }> {
+var core = require('@capacitor/core');
+
+const CapacitorNativeFilePicker = core.registerPlugin('CapacitorNativeFilePicker', {
+    web: () => Promise.resolve().then(function () { return web; }).then(m => new m.CapacitorNativeFilePickerWeb()),
+});
+
+class CapacitorNativeFilePickerWeb extends core.WebPlugin {
+    async echo(options) {
         console.log('ECHO', options);
         return options;
     }
-
-    async launchFolderPicker(options: { limit: number }): Promise<{ folders: Array<string> }> {
+    async launchFolderPicker(options) {
         console.log(`FOLDER PICKER`, options);
-
         return {
             folders: ["/example-directory1", "/example-directory2"]
         };
     }
-    
-    async launchFilePicker(options: FilePickerOptions): Promise<{ files: Array<string> }> {
+    async launchFilePicker(options) {
         console.log('LAUNCH FILE PICKER', options);
-        
         return {
             files: ["./example-file1.txt", "./example-file2.txt", "./example-file3.txt"]
         };
     }
-
-    async shareFile(options: { filepath: string }): Promise<void> {
+    async shareFile(options) {
         console.log(`File ${options.filepath} shared!`);
     }
-
-    async getFileUrlForUri(options: { uri: string }): Promise<{ filepath: string }> {
+    async getFileUrlForUri(options) {
         console.log('getFileUrlForUri', options);
-
         return {
             filepath: "./example-converted-file.txt"
         };
     }
-
-    async createFile(options: CreateFileOptions): Promise<{ filepath: string }> {
+    async createFile(options) {
         console.log('createFile', options);
-
-        return {
-            filepath: "./example-converted-file.txt"
-        }
-    }
-
-    async writeToFile(options: WriteToFileOptions): Promise<{ filepath: string }> {
-        console.log('writeToFile', options);
-
         return {
             filepath: "./example-converted-file.txt"
         };
     }
-
-    async fileStat(options: { filepath: string }): Promise<{ mimeType: string, fileSize: number, fileName: string }> {
+    async writeToFile(options) {
+        console.log('writeToFile', options);
+        return {
+            filepath: "./example-converted-file.txt"
+        };
+    }
+    async fileStat(options) {
         console.log('fileStat', options);
-
         return {
             mimeType: "text/plain",
             fileSize: 100,
             fileName: "example-file.txt"
         };
     }
-
-    async deleteFile(options: { filepath: string }): Promise<void> {
+    async deleteFile(options) {
         console.log('deleteFile', options);
-
         return;
     }
-
-    async renameFile(options: { filepath: string, newFilename: string }): Promise<{filepath: string, filename: string }> {
+    async renameFile(options) {
         console.log('renameFile', options);
-
         return {
             filepath: "./example-renamed-file.txt",
             filename: "example-renamed-file.txt"
         };
     }
 }
+
+var web = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    CapacitorNativeFilePickerWeb: CapacitorNativeFilePickerWeb
+});
+
+exports.CapacitorNativeFilePicker = CapacitorNativeFilePicker;
+//# sourceMappingURL=plugin.cjs.js.map

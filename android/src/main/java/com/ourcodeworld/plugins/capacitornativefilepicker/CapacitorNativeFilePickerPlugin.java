@@ -2,15 +2,14 @@ package com.ourcodeworld.plugins.capacitornativefilepicker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.Settings;
-import android.util.Log;
+import android.provider.DocumentsContract;
+import android.provider.OpenableColumns;
 
 import androidx.activity.result.ActivityResult;
-import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
 import com.getcapacitor.FileUtils;
@@ -25,10 +24,12 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
-import org.json.JSONException;
-
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 @CapacitorPlugin(
     name = "CapacitorNativeFilePicker",
@@ -83,21 +84,12 @@ public class CapacitorNativeFilePickerPlugin extends Plugin {
         }catch (Exception ex){}
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
     @PluginMethod
     public void launchFilePicker(PluginCall call){
         if (getPermissionState("storage") != PermissionState.GRANTED) {
             requestPermissionForAlias("storage", call, "pickerPermsCallback");
         } else {
-            try {
-                if (Environment.isExternalStorageManager()) {
-                    launchPicker(call);
-                } else {
-                    launchManageAllFilesAccessIntent();
-                }
-            } catch (Exception | Error exception) {
-                launchPicker(call);
-            }
+            launchPicker(call);
         }
     }
 
@@ -106,72 +98,47 @@ public class CapacitorNativeFilePickerPlugin extends Plugin {
         if (getPermissionState("storage") != PermissionState.GRANTED) {
             requestPermissionForAlias("storage", call, "pickerPermsCallback");
         } else {
-            try {
-                if (Environment.isExternalStorageManager()) {
-                    launchPickerFolder(call);
-                } else {
-                    launchManageAllFilesAccessIntent();
-                }
-            } catch (Exception | Error exception) {
-                launchPickerFolder(call);
-            }
+            launchPickerFolder(call);
         }
     }
 
+    /**
+     * This method launches the native document picker and allows the user to select a single
+     * or multiple files.
+     *
+     * @param call
+     */
     @PluginMethod
     public void launchPicker(PluginCall call) {
-        Intent intent = new Intent("com.ourcodeworld.plugins.capacitornativefilepicker.DialogShowPicker");
-
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 
-        intent.putExtra("pickertype", "files");
-        intent.putExtra("limit", call.getInt("limit", -1));
-        intent.putExtra("showHiddenFiles", call.getBoolean("showHiddenFiles", false));
-        intent.putExtra("allowedExtensions", call.getArray("allowedExtensions", new JSArray()).toString());
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
         startActivityForResult(call, intent, "pickFilesResult");
     }
 
     @PluginMethod
     public void launchPickerFolder(PluginCall call) {
-        Intent intent = new Intent("com.ourcodeworld.plugins.capacitornativefilepicker.DialogShowPicker");
-
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 
-        intent.putExtra("pickertype", "folders");
-        intent.putExtra("limit", call.getInt("limit", -1));
-        intent.putExtra("showHiddenFiles", call.getBoolean("showHiddenFiles", false));
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
         startActivityForResult(call, intent, "pickFoldersResult");
-    }
-
-    /**
-     * This method is called when the user has not granted access to the external storage.
-     */
-    public void launchManageAllFilesAccessIntent(){
-        Intent intent = new Intent();
-        intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        Uri uri = Uri.fromParts(
-            "package",
-            getContext().getPackageName(),
-            null
-        );
-        intent.setData(uri);
-        getActivity().startActivity(intent);
     }
 
     @PermissionCallback
     private void pickerPermsCallback(PluginCall call) {
         if (getPermissionState("storage") == PermissionState.GRANTED) {
-            try {
-                if (Environment.isExternalStorageManager()) {
-                    launchPicker(call);
-                } else {
-                    launchManageAllFilesAccessIntent();
-                }
-            } catch (Exception | Error exception) {
-                launchPicker(call);
-            }
+            launchPicker(call);
         } else {
             call.reject("Permission is required to take a picture");
         }
@@ -185,14 +152,37 @@ public class CapacitorNativeFilePickerPlugin extends Plugin {
             call.reject("Activity canceled");
         } else {
             Intent data = result.getData();
+            JSArray files = new JSArray();
 
-            try{
-                JSArray files = new JSArray(data.getStringExtra("result"));
-                
-                ret.put("files", files);
+            if (data.getData() == null) {
+                ClipData clip = data.getClipData();
 
-                call.resolve(ret);
-            }catch(JSONException e){}
+                for (int i=0;i < clip.getItemCount();i++) {
+                    Uri uri = clip.getItemAt(i).getUri();
+
+                    getContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                    JSObject fileInfo = new JSObject();
+
+                    fileInfo.put("filepath", uri.toString());
+                    fileInfo.put("filename", this.getFileName(uri));
+
+                    files.put(fileInfo);
+                }
+            }else{
+                Uri uri = data != null ? data.getData() : null;
+                getContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                JSObject fileInfo = new JSObject();
+
+                fileInfo.put("filepath", uri.toString());
+                fileInfo.put("filename", this.getFileName(uri));
+
+                files.put(fileInfo);
+            }
+
+            ret.put("files", files);
+            call.resolve(ret);
         }
     }
 
@@ -204,14 +194,167 @@ public class CapacitorNativeFilePickerPlugin extends Plugin {
             call.reject("Activity canceled");
         } else {
             Intent data = result.getData();
+            Uri directory = data.getData();
 
-            try{
-                JSArray files = new JSArray(data.getStringExtra("result"));
+            JSArray folders = new JSArray();
+            folders.put(directory.toString());
 
-                ret.put("folders", files);
+            ret.put("folders", folders);
+            call.resolve(ret);
+        }
+    }
 
-                call.resolve(ret);
-            }catch(JSONException e){}
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+    @PluginMethod
+    public void createFile(PluginCall call) {
+        Uri directory = Uri.parse(call.getString("directory"));
+
+        String docId = DocumentsContract.getTreeDocumentId(directory);
+
+        Uri dirUri = DocumentsContract.buildDocumentUriUsingTree(directory, docId);
+
+        Uri outputUri = null;
+
+        try
+        {
+            outputUri = DocumentsContract.createDocument(
+                getContext().getContentResolver(),
+                dirUri,
+                "*/*",
+                call.getString("filename")
+            );
+
+            JSObject response = new JSObject();
+
+            response.put("filepath", outputUri.toString());
+            response.put("filename", this.getFileName(outputUri));
+
+            call.resolve(response);
+        } catch (FileNotFoundException e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @PluginMethod
+    public void writeToFile(PluginCall call){
+        try {
+            OutputStream os = null;
+
+            os = getContext().getContentResolver().openOutputStream( Uri.parse(call.getString("filepath")), "w");
+
+            os.write(call.getString("content").getBytes());
+
+            os.close();
+
+            JSObject response = new JSObject();
+
+            call.resolve(response);
+        } catch (FileNotFoundException e) {
+            call.reject(e.getMessage());
+        } catch (IOException e){
+            call.reject(e.getMessage());
+        } catch (Exception e){
+            call.reject(e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void readFile(PluginCall call){
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(
+                getContext().getContentResolver().openInputStream(
+                    Uri.parse(
+                        call.getString("filepath")
+                    )
+                )
+            );
+
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder sb = new StringBuilder();
+            String s;
+
+            while ((s = bufferedReader.readLine()) != null) {
+                sb.append(s);
+            }
+
+            String fileContent = sb.toString();
+
+            JSObject response = new JSObject();
+
+            response.put("data", fileContent);
+
+            call.resolve(response);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @PluginMethod
+    public void fileStat(PluginCall call){
+        Uri filepath = Uri.parse(call.getString("filepath"));
+
+        Cursor returnCursor = getContext().getContentResolver().query(filepath, null, null, null, null);
+
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+        returnCursor.moveToFirst();
+
+        JSObject response = new JSObject();
+
+        response.put("mimeType", getContext().getContentResolver().getType(filepath));
+        response.put("fileName", returnCursor.getString(nameIndex));
+        response.put("fileSize", returnCursor.getLong(sizeIndex));
+
+        call.resolve(response);
+    }
+
+    @PluginMethod
+    public void deleteFile(PluginCall call){
+        try{
+            Uri filepath = Uri.parse(call.getString("filepath"));
+
+            DocumentsContract.deleteDocument(getContext().getContentResolver(), filepath);
+
+            call.resolve();
+        }catch(Exception ex){
+            call.reject(ex.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void renameFile(PluginCall call){
+        try{
+            Uri filepath = Uri.parse(call.getString("filepath"));
+
+            DocumentsContract.renameDocument(getContext().getContentResolver(), filepath, call.getString("newFilename"));
+
+            call.resolve();
+        }catch(Exception ex){
+            call.reject(ex.getMessage());
         }
     }
 }

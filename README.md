@@ -53,6 +53,8 @@ console.log(files);
 * [`launchFolderPicker(...)`](#launchfolderpicker)
 * [`shareFile(...)`](#sharefile)
 * [`getFileUrlForUri(...)`](#getfileurlforuri)
+* [`createFile(...)`](#createfile)
+* [`writeToFile(...)`](#writetofile)
 
 </docgen-index>
 
@@ -128,6 +130,36 @@ getFileUrlForUri(options: { uri: string; }) => any
 | Param         | Type                          |
 | ------------- | ----------------------------- |
 | **`options`** | <code>{ uri: string; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### createFile(...)
+
+```typescript
+createFile(options: CreateFileOptions) => any
+```
+
+| Param         | Type                                                                   |
+| ------------- | ---------------------------------------------------------------------- |
+| **`options`** | <code>{ directory: string; filename: string; content: string; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### writeToFile(...)
+
+```typescript
+writeToFile(options: WriteToFileOptions) => any
+```
+
+| Param         | Type                                                |
+| ------------- | --------------------------------------------------- |
+| **`options`** | <code>{ filepath: string; content: string; }</code> |
 
 **Returns:** <code>any</code>
 

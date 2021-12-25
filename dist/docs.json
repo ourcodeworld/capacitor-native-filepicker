@@ -90,6 +90,42 @@
         "docs": "",
         "complexTypes": [],
         "slug": "getfileurlforuri"
+      },
+      {
+        "name": "createFile",
+        "signature": "(options: CreateFileOptions) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ directory: string; filename: string; content: string; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "CreateFileOptions"
+        ],
+        "slug": "createfile"
+      },
+      {
+        "name": "writeToFile",
+        "signature": "(options: WriteToFileOptions) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ filepath: string; content: string; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "WriteToFileOptions"
+        ],
+        "slug": "writetofile"
       }
     ],
     "properties": []

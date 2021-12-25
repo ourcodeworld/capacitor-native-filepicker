@@ -7,6 +7,15 @@ export declare type FolderPickerOptions = {
     limit?: number;
     showHiddenFiles?: boolean;
 };
+export declare type CreateFileOptions = {
+    directory: string;
+    filename: string;
+    content: string;
+};
+export declare type WriteToFileOptions = {
+    filepath: string;
+    content: string;
+};
 export interface CapacitorNativeFilePickerPlugin {
     echo(options: {
         value: string;
@@ -25,6 +34,12 @@ export interface CapacitorNativeFilePickerPlugin {
     getFileUrlForUri(options: {
         uri: string;
     }): Promise<{
-        url: string;
+        filepath: string;
+    }>;
+    createFile(options: CreateFileOptions): Promise<{
+        filepath: string;
+    }>;
+    writeToFile(options: WriteToFileOptions): Promise<{
+        filepath: string;
     }>;
 }

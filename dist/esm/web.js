@@ -25,5 +25,36 @@ export class CapacitorNativeFilePickerWeb extends WebPlugin {
             filepath: "./example-converted-file.txt"
         };
     }
+    async createFile(options) {
+        console.log('createFile', options);
+        return {
+            filepath: "./example-converted-file.txt"
+        };
+    }
+    async writeToFile(options) {
+        console.log('writeToFile', options);
+        return {
+            filepath: "./example-converted-file.txt"
+        };
+    }
+    async fileStat(options) {
+        console.log('fileStat', options);
+        return {
+            mimeType: "text/plain",
+            fileSize: 100,
+            fileName: "example-file.txt"
+        };
+    }
+    async deleteFile(options) {
+        console.log('deleteFile', options);
+        return;
+    }
+    async renameFile(options) {
+        console.log('renameFile', options);
+        return {
+            filepath: "./example-renamed-file.txt",
+            filename: "example-renamed-file.txt"
+        };
+    }
 }
 //# sourceMappingURL=web.js.map
