@@ -85,4 +85,29 @@ public class CapacitorNativeFilePickerPlugin: CAPPlugin, UIDocumentPickerDelegat
             self.pickerType: items
         ])
     }
+    
+    @objc func shareFile(_ call: CAPPluginCall){
+        let fileURL = URL(
+            fileURLWithPath: call.getString("filepath")!
+        )
+        
+        // Create the Array which includes the files you want to share
+        var filesToShare = [Any]()
+        
+        filesToShare.append(fileURL)
+
+        // Make the activityViewContoller which shows the share-view
+        let activityViewController = UIActivityViewController(
+            activityItems: filesToShare,
+            applicationActivities: nil
+        )
+
+        DispatchQueue.main.async { [weak self] in
+            self?.bridge?.viewController?.present(
+                activityViewController,
+                animated: true,
+                completion: nil
+            )
+        }
+    }
 }
